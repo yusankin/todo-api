@@ -1,7 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-import models
-
+from src import models
 
 app = FastAPI()
 
@@ -9,6 +8,11 @@ app = FastAPI()
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+
+@app.post("/todos/")
+async def create_item(item: models.Resistar_data):
+    return item
 
 
 if __name__ == "__main__":
