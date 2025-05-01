@@ -4,6 +4,8 @@ from src import models
 
 app = FastAPI()
 
+todos: list[models.Resistar_data] = []
+
 
 @app.get("/health")
 async def health_check():
@@ -12,7 +14,13 @@ async def health_check():
 
 @app.post("/todos/")
 async def create_item(item: models.Resistar_data):
-    return item
+    todos.append(item)
+    return todos
+
+
+@app.get("/todos")
+async def get_item():
+    return todos
 
 
 if __name__ == "__main__":
