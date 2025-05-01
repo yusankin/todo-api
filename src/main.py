@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from src import models
 
 app = FastAPI()
@@ -21,6 +21,15 @@ async def create_item(item: models.Resistar_data):
 @app.get("/todos")
 async def get_item():
     return todos
+
+
+@app.delete("/todos/{index}")
+async def delete_item(index: int):
+    if index < 0 or index >= len(todos):
+        raise HTTPException(status_code=404, detail="index is out of Range")
+
+    todos.pop(index)
+    return {"message": "delete is success"}
 
 
 if __name__ == "__main__":

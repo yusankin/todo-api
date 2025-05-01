@@ -1,3 +1,4 @@
+from random import sample
 import pytest
 from src.main import app, todos
 from src.models import Resistar_data
@@ -32,7 +33,7 @@ def test_post_title_and_done(sample_data):
     assert response.json()[0]["done"] == False
 
 
-def test_post_registory(sample_data):
+def test_post_data_registory(sample_data):
     client = TestClient(app)
     for index, data in enumerate(sample_data):
         response = client.post("/todos/", json=data.model_dump())
@@ -44,3 +45,19 @@ def test_post_registory(sample_data):
     result_list = get_response.json()
     for receive, sent in zip(result_list, sample_data):
         assert receive == sent.model_dump()
+
+
+def test_post_data_is_delete(sample_data):
+    client = TestClient(app)
+    for index, data in enumerate(sample_data):
+        response = client.post("/todos/", json=data.model_dump())
+        assert response.status_code == 200
+
+    for i in range(len(sample_data)):
+        res_before = client.get("/todos")
+        assert res_before.status_code == 200
+        current_list = res_before.json()
+        assert len(current_list) == len(sample_data) - i
+
+        delete_list = client.delete("/todos/0")
+        assert delete_list.status_code == 200
