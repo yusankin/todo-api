@@ -125,8 +125,38 @@ DELETE /todos/{index}
 index は0から始まるリストの順番で指定されます。
 削除後、GET /todos で確認すると該当のToDoが消えていることを確認できます。
 
+### ✅ ToDo更新（部分更新）
+PATCH /todos/{index}
 
-🧾 データ構造（Pydanticモデル）
+**更新可能なフィールド（いずれも任意）**
+- title: str
+- done: bool
+- date: str（例："2025年05月07日"）
+
+**リクエスト例（doneだけ変更）**
+```json
+{
+  "done": true
+}
+```
+
+レスポンス例
+```json
+
+{
+  "title": "掃除",
+  "done": true,
+  "date": "2025年05月07日"
+}
+```
+
+エラー例
+
+存在しない index → 404 index is out of Range
+
+
+
+## 🧾 データ構造（Pydanticモデル）
 ```python
 from pydantic import BaseModel
 from datetime import datetime

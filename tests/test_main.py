@@ -1,4 +1,3 @@
-from random import sample
 import pytest
 from src.main import app, todos
 from src.models import Resistar_data
@@ -15,6 +14,15 @@ def sample_data():
 @pytest.fixture(autouse=True)
 def reset_todos():
     todos.clear()
+
+
+def set_sampledata(item):
+    client = TestClient(app)
+    for index, data in enumerate(item):
+        response = client.post("/todos/", json=data.model_dump())
+        assert response.status_code == 200
+
+    return client, response
 
 
 def test_health():
@@ -34,11 +42,7 @@ def test_post_title_and_done(sample_data):
 
 
 def test_post_data_registory(sample_data):
-    client = TestClient(app)
-    for index, data in enumerate(sample_data):
-        response = client.post("/todos/", json=data.model_dump())
-        assert response.status_code == 200
-
+    client, response = set_sampledata(sample_data)
     get_response = client.get("/todos")
     assert get_response.status_code == 200
 
@@ -48,10 +52,7 @@ def test_post_data_registory(sample_data):
 
 
 def test_post_data_is_delete(sample_data):
-    client = TestClient(app)
-    for index, data in enumerate(sample_data):
-        response = client.post("/todos/", json=data.model_dump())
-        assert response.status_code == 200
+    client, response = set_sampledata(sample_data)
 
     for i in range(len(sample_data)):
         res_before = client.get("/todos")
@@ -61,3 +62,22 @@ def test_post_data_is_delete(sample_data):
 
         delete_list = client.delete("/todos/0")
         assert delete_list.status_code == 200
+
+
+def test_update_data(sample_data):
+    client, response = set_sampledata(sample_data)
+    for i in range(len(sample_data)):
+        update_text = "updatetext" + str(i + 1)
+        update_index = "/todos/" + str(i)
+        update_sample_data = Resistar_data(title=update_text, done=True)
+        update_response = client.patch(
+            update_index, json=update_sample_data.model_dump()
+        )
+        assert update_response.status_code == 200
+
+        get_response = client.get("/todos")
+        assert get_response.status_code == 200
+
+        result_list = get_response.json()
+        assert result_list[i]["title"] == update_text
+        assert result_list[i]["done"] == True
