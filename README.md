@@ -154,6 +154,40 @@ PATCH /todos/{index}
 
 存在しない index → 404 index is out of Range
 
+### ✅ ToDo削除（UUID指定）
+DELETE /todos/{id}
+レスポンス例
+```json
+{
+  "message": "delete is success"
+}
+```
+
+### ✅ ToDo更新（UUID指定）
+PATCH /todos/{id}
+更新可能フィールド（いずれも任意）
+```json
+title: str
+done: bool
+date: str
+```
+
+リクエスト例
+```json
+{
+  "done": true
+}
+```
+
+レスポンス例
+```json
+{
+  "id": "2a7e3a01-9d84-4d0d-a0c5-7d8cb5fdfd4a",
+  "title": "掃除",
+  "done": true,
+  "date": "2025年05月08日"
+}
+```
 
 
 ## 🧾 データ構造（Pydanticモデル）

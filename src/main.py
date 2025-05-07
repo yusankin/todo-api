@@ -5,7 +5,7 @@ from src import models
 
 app = FastAPI()
 
-todos: list[models.Resistar_data] = []
+todos: list[models.TodoItem] = []
 
 
 @app.get("/health")
@@ -14,7 +14,7 @@ async def health_check():
 
 
 @app.post("/todos/")
-async def create_item(item: models.Resistar_data):
+async def create_item(item: models.TodoItem):
     todos.append(item)
     return todos
 
@@ -24,8 +24,8 @@ async def get_item():
     return todos
 
 
-@app.delete("/todos/{index}")
-async def delete_item(index: int):
+@app.delete("/todos/by-index/{index}")
+async def delete_item_index(index: int):
     if index < 0 or index >= len(todos):
         raise HTTPException(status_code=404, detail="index is out of Range")
 
@@ -33,16 +33,39 @@ async def delete_item(index: int):
     return {"message": "delete is success"}
 
 
-@app.patch("/todos/{index}")
-async def update_item(index: int, item: models.Resistar_data):
+@app.delete("/todos/{id}")
+async def delete_item_index(id: str):
+    for num, todo in enumerate(todos):
+        if todo.id == id:
+            todos.pop(num)
+            return {"message": "delete is success"}
+
+    raise HTTPException(status_code=404, detail="id cannot found")
+
+
+@app.patch("/todos/by-index/{index}")
+async def update_item_index(index: int, item: models.TodoItem):
     if index < 0 or index >= len(todos):
         raise HTTPException(status_code=404, detail="index is out of Range")
     current = todos[index]
-    current_model = models.Resistar_data(**current.model_dump())
+    current_model = models.TodoItem(**current.model_dump())
     update_data = item.model_dump(exclude_unset=True)
     update_item = current_model.copy(update=update_data)
-    todos[index] = jsonable_encoder(update_item)
-    return update_item
+    todos[index] = update_item
+    return jsonable_encoder(update_item)
+
+
+@app.patch("/todos/{id}")
+async def update_item_index(id: str, item: models.TodoItem):
+    for num, todo in enumerate(todos):
+        if todo.id == id:
+            current_model = models.TodoItem(**todo.model_dump())
+            update_data = item.model_dump(exclude_unset=True)
+            update_item = current_model.copy(update=update_data)
+            todos[num] = update_item
+            return jsonable_encoder(update_item)
+
+    raise HTTPException(status_code=404, detail="id cannot found")
 
 
 if __name__ == "__main__":
