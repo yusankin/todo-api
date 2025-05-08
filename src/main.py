@@ -1,7 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from src import models
+from src import models, file_io
 
 app = FastAPI()
 
@@ -40,7 +40,7 @@ async def delete_item_index(id: str):
             todos.pop(num)
             return {"message": "delete is success"}
 
-    raise HTTPException(status_code=404, detail="id cannot found")
+    raise HTTPException(status_code=404, detail="id cannot be found")
 
 
 @app.patch("/todos/by-index/{index}")
@@ -65,7 +65,26 @@ async def update_item_index(id: str, item: models.TodoItem):
             todos[num] = update_item
             return jsonable_encoder(update_item)
 
-    raise HTTPException(status_code=404, detail="id cannot found")
+    raise HTTPException(status_code=404, detail="id cannot be found")
+
+
+@app.post("/todos/save")
+async def save_item(filename: str = "todolist.json"):
+    file_io.save_data(todos, filename)
+    return {"message": "saved successfully", "filename": filename}
+
+
+@app.post("/todos/load")
+async def load_item(filename: str = "todolist.json"):
+    todolist_json = file_io.load_data(filename)
+
+    if todolist_json is None:
+        raise HTTPException(status_code=404, detail="file cannot be found")
+    todos.clear()
+    for todo_json in todolist_json:
+        todo_data = models.TodoItem(**todo_json)
+        todos.append(todo_data)
+    return todos
 
 
 if __name__ == "__main__":
