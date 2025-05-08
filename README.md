@@ -64,9 +64,11 @@ GET /health
 ---
 
 ### ✅ ToDo登録
-```bash
+```
 POST /todos/
+```
 リクエストボディ（例）：
+```json
 {
   "title": "買い物に行く",
   "done": false
@@ -75,7 +77,7 @@ POST /todos/
 date はサーバー側で自動補完されます（例："2025年04月29日"）
 
 レスポンス例
-```bash
+```json
 {
   "title": "買い物に行く",
   "done": false,
@@ -85,9 +87,11 @@ date はサーバー側で自動補完されます（例："2025年04月29日"�
 ---
 
 ### ✅ ToDo一覧取得
-```
+```bash
 GET /todos
+```
 レスポンス例：
+```json
 [
   {
     "title": "買い物に行く",
@@ -105,8 +109,9 @@ GET /todos
 ---
 
 ### ✅ ToDo削除
+```bash
 DELETE /todos/{index}
-
+```
 成功レスポンス
 ```json
 {
@@ -126,7 +131,9 @@ index は0から始まるリストの順番で指定されます。
 削除後、GET /todos で確認すると該当のToDoが消えていることを確認できます。
 
 ### ✅ ToDo更新（部分更新）
+```bash
 PATCH /todos/{index}
+```
 
 **更新可能なフィールド（いずれも任意）**
 - title: str
@@ -155,7 +162,9 @@ PATCH /todos/{index}
 存在しない index → 404 index is out of Range
 
 ### ✅ ToDo削除（UUID指定）
+```bash
 DELETE /todos/{id}
+```
 レスポンス例
 ```json
 {
@@ -164,7 +173,9 @@ DELETE /todos/{id}
 ```
 
 ### ✅ ToDo更新（UUID指定）
+```bash
 PATCH /todos/{id}
+```
 更新可能フィールド（いずれも任意）
 ```json
 title: str
@@ -188,8 +199,42 @@ date: str
   "date": "2025年05月08日"
 }
 ```
+### ✅ データ保存
+```bash
+POST /todos/save?filename=ファイル名（任意）
+```
+クエリ例:
+```
+POST /todos/save?filename=mytasks.json
+```
+レスポンス:
+```json
+{
+  "message": "saved successfully",
+  "filename": "mytasks.json"
+}
+```
 
-
+### ✅ データ読み込み
+```bash
+POST /todos/load?filename=ファイル名（任意）
+```
+パス例:
+```
+POST /todos/load?filename=mytasks.json
+```
+レスポンス（読み込んだToDoリスト）:
+```json
+[
+  {
+    "id": "a1b2c3...",
+    "title": "掃除",
+    "done": true,
+    "date": "2025年05月08日"
+  },
+  ...
+]
+```
 ## 🧾 データ構造（Pydanticモデル）
 ```python
 from pydantic import BaseModel
@@ -206,14 +251,3 @@ class Resistar_data(BaseModel):
 ```python
 pytest
 ```
-✅ テストの観点  
-POSTでToDoを登録  
-GETで一覧を取得し、登録内容と一致するか検証  
-テスト間で todos を初期化するため fixture にて todos.clear() を実施  
-
-💡 今後の発展案
-
-PATCH /todos/{index} による状態更新  
-DELETE /todos/{index} による削除機能  
-SQLiteやファイルベースの永続化  
-フロントエンドとの連携（React / HTML / REST Client）  
