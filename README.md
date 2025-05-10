@@ -1,7 +1,26 @@
-# Python Lab: 📋 ToDo API
+# Python Lab: 📋 ToDo App
+このプロジェクトは、FastAPI によるWeb APIと、StreamlitによるフロントエンドUIを組み合わせた、シンプルかつ拡張性のあるToDoアプリケーションです。
+開発効率を重視しながら、CRUD操作、データ永続化、UI操作、起動テンプレートの整備までを一貫して行っています。
 
-このプロジェクトは、FastAPIとPydanticを使って構築された**シンプルなToDo管理API**です。  
-PythonとAPI設計・テストの基礎を理解することを目的にアジャイル的に開発しています。
+## 🎥 デモ動画
+
+![demo](./TodoAppDemo.gif)
+
+## ✅ 起動方法（FastAPI + Streamlit 同時起動） -> start.py を使って自動起動
+```bash
+python start.py
+```
+
+## 🎨 Streamlit UI機能一覧
+
+|機能	|内容	|API連携|
+|--|--|--|
+|📋 ToDo一覧表示|現在のタスク一覧|GET /todos|
+|➕ タスク追加|テキストと完了チェック付き|POST /todos/|
+|🗑 タスク削除|各タスク横に削除ボタン|DELETE /todos/{id}|
+|💾 保存|現在のToDoをJSONファイルに保存|POST /todos/save|
+|📂 読み込み|ファイルからToDo一覧を復元|POST /todos/load|
+
 
 ---
 
@@ -12,19 +31,28 @@ PythonとAPI設計・テストの基礎を理解することを目的にアジ�
 - Uvicorn
 - Pydantic（v2系）
 - Pytest
+- Streamlit
 
 ---
 
 ## 📦 プロジェクト構成
 
-todo-api/  
- ├── src/   
- │ ├── main.py # APIエントリーポイント  
- │ └── models.py # Pydanticデータモデル   
- ├── tests/   
- │ └── test_todo.py # エンドポイントテスト   
- └── README.md
+## 📦 プロジェクト構成
 
+```
+todo-api/
+├── src/  
+│   ├── main.py            # FastAPIエントリーポイント  
+│   └── file_io.py         # JSON保存・読み込み
+├── todo_app.py             # Streamlitフロントエンド
+├── start.py               # FastAPI + Streamlit 自動起動スクリプト
+├── tests/
+│   └── test_main.py       # pytestによるユニットテスト
+├── data/
+│   └── todolist.json      # 保存データ（自動生成）
+├── README.md
+└── requirements.txt
+```
 
 ---
 
